@@ -1,0 +1,31 @@
+# Python bytecode
+*.pyc
+__pycache__/
+
+# Virtual environment
+venv/
+env/
+
+# IDE files
+.vscode/
+.idea/
+
+# Dependency directories
+lib/
+libs/
+dist/
+build/
+
+# Compiled Python files
+*.pyo
+*.pyd
+*.pyw
+*.pyz
+*.pyzw
+
+# Log files
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
