@@ -30,7 +30,10 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "6e3b-102-215-12-244.ngrok-free.app",
+    "localhost"
+]
 
 
 # Application definition
@@ -130,7 +133,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-MPESA_ENVIRONMENT = 'sandbox'
+MPESA_ENVIRONMENT = os.getenv("MPESA_ENVIRONMENT")
 
 # Credentials for the daraja app
 
@@ -168,3 +171,6 @@ MPESA_INITIATOR_USERNAME = os.getenv("MPESA_INITIATOR_USERNAME")
 # Plaintext password for initiator (to be used in B2C, B2B, AccountBalance and TransactionStatusQuery Transactions)
 
 MPESA_INITIATOR_SECURITY_CREDENTIAL = os.getenv("MPESA_INITIATOR_SECURITY_CREDENTIAL")
+MPESA_SECURITY_CREDENTIAL = os.getenv("MPESA_SECURITY_CREDENTIAL")
+
+MPESA_CALLBACK_URL = os.getenv("MPESA_CALLBACK_URL")
