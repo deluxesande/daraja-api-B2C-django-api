@@ -93,21 +93,22 @@ class STKPushCallBack(APIView):
                 result_description = request.data['Body']['stkCallback']['ResultDesc']
                 
                 # first do a query and get to see if the merchant_request_id and  checkout_request_id do exist
-                # try:
-                #     print(the_transaction)
+                the_transaction = MpesaTransaction.objects.filter(transaction_id=merchant_request_id,checkout_request_id=checkout_request_id).first()
+                try:
+                    print(the_transaction)
 
-                #     # update the transaction with the result code and result_description
-                #     the_transaction.result_code = result_code
-                #     the_transaction.result_description = result_description
-                #     the_transaction.status = "FAILED"
-                #     the_transaction.save()
+                    # update the transaction with the result code and result_description
+                    the_transaction.result_code = result_code
+                    the_transaction.result_description = result_description
+                    the_transaction.status = "FAILED"
+                    the_transaction.save()
 
 
 
                 
-                # except PaymentTransactions.DoesNotExist:
-                #     print("multiple objects or doesnt exist")
-                #     pass         
+                except MpesaTransaction.DoesNotExist:
+                    print("multiple objects or doesnt exist")
+                    pass         
         else:
             pass
             # print("the request is not valid")
