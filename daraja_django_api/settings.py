@@ -11,6 +11,11 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
+import os
+
+# Load the .env file
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-v0uhso3zua39+-spp_&9m_qudnnsmyt#em$4vl1dceay#n=m_0'
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -129,36 +134,37 @@ MPESA_ENVIRONMENT = 'sandbox'
 
 # Credentials for the daraja app
 
-MPESA_CONSUMER_KEY = 'AvGN3PbVflbkauzUETTLHvC9xwCGgsIm4W0hRReWuqwNNhyB'
-MPESA_CONSUMER_SECRET = 'ayykSGx8yRAAqsvQngjc2Y0pUvlBYky9kQr3IQVSVtgf5ZDjuGdZ6yjI5XQGTN4K'
+MPESA_CONSUMER_KEY = os.getenv("MPESA_CONSUMER_KEY")
+MPESA_CONSUMER_SECRET = os.getenv("MPESA_CONSUMER_SECRET")
 
 #Shortcode to use for transactions. For sandbox  use the Shortcode 1 provided on test credentials page
+# Change this to your own shortcode in production
 
-MPESA_SHORTCODE = '174379'
+MPESA_SHORTCODE = os.getenv("MPESA_SHORTCODE")
 
 # Shortcode to use for Lipa na MPESA Online (MPESA Express) transactions
 # This is only used on sandbox, do not set this variable in production
-# For sandbox use the Lipa na MPESA Online Shorcode provided on test credentials page
+# For sandbox use the Lipa na MPESA Online Shortcode provided on test credentials page
 
-MPESA_EXPRESS_SHORTCODE = '174379'
+MPESA_EXPRESS_SHORTCODE = os.getenv("MPESA_EXPRESS_SHORTCODE")
 
 # Type of shortcode
 # Possible values:
 # - paybill (For Paybill)
 # - till_number (For Buy Goods Till Number)
 
-MPESA_SHORTCODE_TYPE = 'paybill'
+MPESA_SHORTCODE_TYPE = os.getenv("MPESA_SHORTCODE_TYPE")
 
 # Lipa na MPESA Online passkey
 # Sandbox passkey is available on test credentials page
 # Production passkey is sent via email once you go live
 
-MPESA_PASSKEY = 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919'
+MPESA_PASSKEY = os.getenv("MPESA_PASSKEY")
 
 # Username for initiator (to be used in B2C, B2B, AccountBalance and TransactionStatusQuery Transactions)
 
-MPESA_INITIATOR_USERNAME = 'testapi'
+MPESA_INITIATOR_USERNAME = os.getenv("MPESA_INITIATOR_USERNAME")
 
 # Plaintext password for initiator (to be used in B2C, B2B, AccountBalance and TransactionStatusQuery Transactions)
 
-MPESA_INITIATOR_SECURITY_CREDENTIAL = 'Safaricom999!*!'
+MPESA_INITIATOR_SECURITY_CREDENTIAL = os.getenv("MPESA_INITIATOR_SECURITY_CREDENTIAL")
