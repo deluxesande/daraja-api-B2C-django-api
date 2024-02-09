@@ -16,6 +16,7 @@ import json
 import requests
 from datetime import datetime
 import base64
+import os
 
 # Load the .env file
 load_dotenv()
@@ -27,16 +28,16 @@ def generate_auth_token():
     """
     Description:generate the access token required by mpesa for authentication.\n
     """
-    consumer_key = "1gWEBFicQT4daQ11WlyPAD494j3MLe8L"
-    consumer_secret = "LA7ADyBEbfqDvqEu"
     api_URL = "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials"
-    response = requests.get(api_URL, auth=HTTPBasicAuth(consumer_key, consumer_secret))
+    response = requests.get(api_URL, auth=HTTPBasicAuth(os.getenv("CONSUMER_KEY"), os.getenv("CONSUMER_SECRET")))
 
     # format the response so as to get the token only
-    formated_response = json.loads(response.text)
-    token = formated_response["access_token"]
+    formatted_response = json.loads(response.text)
+    token = formatted_response["access_token"]
 
+    print(token)
     return token
+
 
 def get_encoded_string():
     """
@@ -124,7 +125,7 @@ class STKPushCallBack(APIView):
                     the_transaction.save()
 
                 except MpesaTransaction.DoesNotExist:
-                    print("multiple objects or doesnt exist")
+                    print("multiple objects or doesn't exist")
                     pass
         else:
             pass
@@ -139,7 +140,7 @@ class STKPushCallBack(APIView):
         return Response(message, status=status.HTTP_200_OK)
 
 
-class MpesaExpressStatusView(APIView):
+class MpesaTransactionStatus(APIView):
     """
     Description:This is the endpoint to check the status of a transaction\n
     """
@@ -162,8 +163,8 @@ class MpesaExpressStatusView(APIView):
             "TransactionID": transaction_id,
             "PartyA": settings.MPESA_SHORTCODE,
             "IdentifierType": "2",
-            "ResultURL": "https://292b-102-215-12-244.ngrok-free.app/stk-push-callback/",
-            "QueueTimeOutURL": "https://292b-102-215-12-244.ngrok-free.app/stk-push-callback/",
+            "ResultURL": settings.MPESA_CALLBACK_URL,
+            "QueueTimeOutURL": settings.MPESA_CALLBACK_URL,
             "Remarks": "Checking transaction status",
             "Occasion": "CheckTransactionStatus"
         }
@@ -183,7 +184,7 @@ class MpesaTransactionPayment(APIView):
         Description:Endpoint to initialize payment \n
         """
         url = "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
-
+        
         # Define the headers for the request
         headers = {
             "Authorization": f"Bearer {generate_auth_token()}",
@@ -193,16 +194,43 @@ class MpesaTransactionPayment(APIView):
         payload = {
             "BusinessShortCode": settings.MPESA_SHORTCODE,
             "Password": get_encoded_string(),
-            "Timestamp":datetime.now().strftime("%Y%m%d%H%M%S"),
+            "Timestamp": datetime.now().strftime("%Y%m%d%H%M%S"),
             "TransactionType": "CustomerPayBillOnline",
             "Amount": "1",
             "PartyA": "254742210044", # The phone number sending money
             "PartyB": settings.MPESA_SHORTCODE,
-            "PhoneNumber": "254742210044",
-            "CallBackURL": "https://292b-102-215-12-244.ngrok-free.app/stk-push-callback/",
+            # "PhoneNumber": "254714208354", # The Mobile Number to receive the STK Pin Prompt
+            "PhoneNumber": "254742210044", # The Mobile Number to receive the STK Pin Prompt
+            "CallBackURL": settings.MPESA_CALLBACK_URL,
             "AccountReference": "Deluxe Sande",
             "TransactionDesc": "Test",
         }
+
+        # Send the request
+        response = requests.post(url, headers=headers, json=payload)
+
+        # Return the response from the transaction status request
+        return Response(response.json())
+    
+class MpesaExpressQuery(APIView):
+    """
+    Description: Use this API to check the status of a Lipa Na M-Pesa Online Payment.\n
+    """
+    def post(self, request):
+        url = "https://sandbox.safaricom.co.ke/mpesa/stkpushquery/v1/query"
+
+        # Define the headers for the request
+        headers = {
+            "Authorization": f"Bearer {generate_auth_token()}",
+            "Content-Type": "application/json",
+        }
+        
+        payload = {    
+            "BusinessShortCode": settings.MPESA_SHORTCODE,    
+            "Password": get_encoded_string(),    
+            "Timestamp": datetime.now().strftime("%Y%m%d%H%M%S"),    
+            "CheckoutRequestID": "ws_CO_09022024131620073742210044",    
+        } 
 
         # Send the request
         response = requests.post(url, headers=headers, json=payload)
